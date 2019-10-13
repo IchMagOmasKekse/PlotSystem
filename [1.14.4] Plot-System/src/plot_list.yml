@@ -1,0 +1,13 @@
+#Erstellt durch Automatisierte Generation dieser Datei
+#
+# Hier werden alle erstellten Plots gelistet.
+# Hier wird festgehalten, ob ein Plot noch zu haben ist, Sprich: nicht bewohnt.
+#
+# Hierarchie:
+# Plot:
+#   WORLD:
+#     X:
+#      Y:
+#       Z:
+#        Is Available: True
+#        Owner: UUID vom owner

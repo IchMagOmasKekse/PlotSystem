@@ -1,0 +1,7 @@
+name: PlotSystem
+version: 1.1.0
+author: TeamDream
+main: me.teamdream.de.PlotSystem
+commands:
+  plot:
+    description: 'Main Command'

@@ -1,0 +1,12 @@
+Changelog des PlotSystems
+
+
+VERSION: 1.1.0
+==========================================
+- Einführung der Plot Begrenzungs Erkennung erfolgreich abgeschlossen
+- Keine bekannten Programm-Fehler enthalten
+
+VERSION: 1.0.0
+==========================================
+- Plugin erstellt und Erkennung der Plot Begrenzung eingeführt
+- Keine bekannten Programm-Fehler enthalten
