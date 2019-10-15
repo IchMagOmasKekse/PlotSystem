@@ -18,7 +18,7 @@ public class PlotCommands implements CommandExecutor {
 				switch(args.length) {
 				case 0:
 					p.sendMessage("[TEST] Area wird erstellt von deiner Location bis deiner Location + 10 Blöcken in jede Richtung");
-					if(PlotSystem.getInstance().getPlotManager().registerPlot(new PlotID(p.getLocation()), p.getLocation(), p.getLocation().add(10,10,10))) {
+					if(PlotSystem.getInstance().getPlotManager().registerPlot(new PlotID(p.getLocation()))) {
 						p.sendMessage("§aDas Plot wurde erstellt");
 					}else p.sendMessage("§cDas Plot konnte nicht erstellt werden");
 					break;

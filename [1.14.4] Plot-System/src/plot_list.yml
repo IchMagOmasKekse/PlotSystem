@@ -4,10 +4,16 @@
 # Hier wird festgehalten, ob ein Plot noch zu haben ist, Sprich: nicht bewohnt.
 #
 # Hierarchie:
-# Plot:
-#   WORLD:
-#     X:
-#      Y:
-#       Z:
-#        Is Available: True
-#        Owner: UUID vom owner
+# Plots:
+#   Is Available: Wert
+#   World: Wert
+#   Sign X: Wert
+#   Sign Y: Wert
+#   Sign Z: Wert
+#   X1: Wert
+#   Y1: Wert
+#   Z1: Wert
+#   X1.1: Wert
+#   Y1.1: Wert
+#   Z1.1: Wert
+#   Owner: [UUID vom Owner]

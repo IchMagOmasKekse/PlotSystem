@@ -15,6 +15,7 @@ import org.bukkit.util.Vector;
 
 import me.teamdream.de.PlotSystem;
 import me.teamdream.de.plotmanager.PlotManager.PlotID;
+import me.teamdream.de.plotmanager.PlotProfile;
 
 public class InteractListener implements Listener {
 	
@@ -50,8 +51,6 @@ public class InteractListener implements Listener {
 								Block schildHalter = e.getClickedBlock().getRelative(e.getBlockFace().getOppositeFace());
 								if(schildHalter.getType().toString().endsWith("_FENCE") || schildHalter.getType().toString().endsWith(checkedMaterial.toString())) {
 									Location pointer = schildHalter.getLocation();
-									Location loc1 = null;
-									Location loc2 = null;
 									
 									p.sendMessage("§7Erfasse Umrandung des Plots...");
 
@@ -61,37 +60,47 @@ public class InteractListener implements Listener {
 									else a1.getBlock().setType(resettedMaterial);
 									
 									playParticles(a1, Effect.MOBSPAWNER_FLAMES);
-									
-									for(int i1 = 0; i1 != 999; i1++) {
-										if(reset == false)vec = getDirection(a1);
-										else vec = getDirectionResetter(a1);
-										if(vec.getX() == 0 && vec.getY() == 0 && vec.getZ() == 0) {
-											break;
-										}else {
-											a1.add(vec);
-											if(reset == false)a1.getBlock().setType(checkedMaterial);
-											else a1.getBlock().setType(resettedMaterial);
-											playParticles(a1, Effect.MOBSPAWNER_FLAMES);
+									PlotSystem.getInstance().getPlotManager().registerPlot(plotid);
+									PlotProfile plotProfile  = PlotSystem.getInstance().getPlotManager().getPlotProfile(plotid);
+									plotProfile.addBlock(a1.getBlock());
+									if(plotProfile != null) {
+										for(int i1 = 0; i1 != 999; i1++) {
+											if(reset == false)vec = getDirection(a1);
+											else vec = getDirectionResetter(a1);
+											if(vec.getX() == 0 && vec.getY() == 0 && vec.getZ() == 0) {
+												break;
+											} else {
+												a1.add(vec);
+												if(reset == false) {
+													plotProfile.addBlock(a1.getBlock());
+													a1.getBlock().setType(checkedMaterial);
+												}else a1.getBlock().setType(resettedMaterial);
+												playParticles(a1, Effect.MOBSPAWNER_FLAMES);
+											}
 										}
-									}
-									
-									if(PlotSystem.getInstance().getPlotManager().registerPlot(plotid, loc1, loc2)) {
-										if(reset == false)p.sendMessage("§fPlot wurde erfasst!");
-										else p.sendMessage("§cDas Plot wurde resettet!");
-										if(reset == false) {
-											sign.setLine(0, "CREATE PLOT");
-											sign.setLine(1, "ID:"+id);
-											sign.setLine(2, "RIGHT=");
-											sign.setLine(3, "RESET");
-											sign.update();
-										}else {
-											sign.setLine(0, "CREATE PLOT");
-											sign.setLine(1, "ID:"+id);
-											sign.setLine(2, "");
-											sign.setLine(3, "");
-											sign.update();
-										}
-									}else p.sendMessage("§cPlot konnte nicht erfasst werden");
+										
+										///////
+										plotProfile.filterRectangles();
+										///////										
+										
+										if(PlotSystem.getInstance().getPlotManager().existPlot(plotid)) {
+											if(reset == false)p.sendMessage("§fPlot wurde erfasst!");
+											else p.sendMessage("§cDas Plot wurde resettet!");
+											if(reset == false) {
+												sign.setLine(0, "CREATE PLOT");
+												sign.setLine(1, "ID:"+id);
+												sign.setLine(2, "RIGHT=");
+												sign.setLine(3, "RESET");
+												sign.update();
+											}else {
+												sign.setLine(0, "CREATE PLOT");
+												sign.setLine(1, "ID:"+id);
+												sign.setLine(2, "");
+												sign.setLine(3, "");
+												sign.update();
+											}
+										}else p.sendMessage("§cPlot konnte nicht erfasst werden");
+									} else p.sendMessage("§cEtwas ist schief gelaufen.. Versuchs nochmal!\nOder es existiert bereits ein Plot mit diesen Namen.");
 								}else {
 									p.sendMessage("§cPlot konnte nicht erstellt werden, da es bereits erstellt wurde!\nErsetze alle Bricks mit Holz Zäunen, um die Simulation erneut abzuspielen");
 								}

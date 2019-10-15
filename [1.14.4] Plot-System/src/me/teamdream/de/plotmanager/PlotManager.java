@@ -2,6 +2,7 @@ package me.teamdream.de.plotmanager;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Random;
 
 import org.bukkit.Location;
@@ -12,6 +13,8 @@ import org.bukkit.entity.Player;
 public class PlotManager {
 	
 	private static String home_path = "plugins/PlotSystem/";
+	
+	public HashMap<String, PlotProfile> plots = new HashMap<String, PlotProfile>();
 	
 	public PlotManager() {
 		
@@ -27,14 +30,16 @@ public class PlotManager {
 		}else return false;
 	}
 	
-	public boolean registerPlot(PlotID plotid, Location loc1, Location loc2) {
-		
+	public boolean registerPlot(PlotID plotid) {
+		if(plots.containsKey(plotid.getID()) == false) plots.put(plotid.getID(), new PlotProfile(plotid.getID()));
 		if(existPlot(plotid) == false) {
 			File file = new File(home_path+"plot_list.yml");
 			FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
-			String key = "Plot."+plotid.getLocation().getWorld().getName()+"."+plotid.getLocationX()+"."+plotid.getLocationY()+"."+plotid.getLocationZ();
-			cfg.set(key, generatePlotID());
-			cfg.set(key+". Is Available", true);
+			cfg.set("Plots."+plotid.getID()+".Is Available", true);
+			cfg.set("Plots."+plotid.getID()+".World", plotid.getLocation().getWorld().getName());
+			cfg.set("Plots."+plotid.getID()+".Sign X", plotid.getLocationX());
+			cfg.set("Plots."+plotid.getID()+".Sign Y", plotid.getLocationY());
+			cfg.set("Plots."+plotid.getID()+".Sign Z", plotid.getLocationZ());
 			
 			try { cfg.save(file); return true; } catch (IOException e) { e.printStackTrace(); return false; }
 		}
@@ -49,9 +54,9 @@ public class PlotManager {
 	}
 	
 	public boolean existPlot(PlotID plotid) {
-		File file = new File(home_path+"plots.yml");
+		File file = new File(home_path+"plot_list.yml");
 		FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
-		String key = "Plot."+plotid.getLocation().getWorld().getName()+"."+plotid.getLocationX()+"."+plotid.getLocationY()+"."+plotid.getLocationZ();
+		String key = "Plots."+plotid.getID()+".World";
 		if(cfg.getString(key) == null) return false;
 		else return true;
 	}
@@ -62,6 +67,10 @@ public class PlotManager {
 		String id = "";
 		id = id + random.nextInt(999999);
 		return id;
+	}
+	
+	public PlotProfile getPlotProfile(PlotID plotid) {
+		return plots.get(plotid.getID());
 	}
 	
 	public static class PlotID {
@@ -75,12 +84,14 @@ public class PlotManager {
 		
 		public PlotID() {}
 		
+		@SuppressWarnings("unused")
 		public String getID() {
 			if(id.equals("KEINE ID FESTGELEGT")) {
-				File file = new File(home_path+"plots.yml");
+				File file = new File(home_path+"plot_list.yml");
 				FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
-				String key = "Plot."+loc.getWorld().getName()+"."+loc.getX()+"."+loc.getY()+"."+loc.getZ();				
-				return cfg.getString(key);
+				String key = "Plots."+loc.getWorld().getName()+"."+loc.getX()+"."+loc.getY()+"."+loc.getZ();				
+//				return cfg.getString(key);
+				return "MUSS PROGRAMMIERT WERDEN";
 			}else return id;
 		}
 		
