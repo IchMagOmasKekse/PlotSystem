@@ -23,7 +23,7 @@ public class InteractListener implements Listener {
 		PlotSystem.getInstance().getServer().getPluginManager().registerEvents(this, PlotSystem.getInstance());
 	}
 	
-	private Material checkedMaterial = Material.BRICKS;
+	private Material checkedMaterial = Material.valueOf("BRICKS");
 	private Material resettedMaterial = Material.OAK_FENCE;
 	private boolean reset = false;
 	
