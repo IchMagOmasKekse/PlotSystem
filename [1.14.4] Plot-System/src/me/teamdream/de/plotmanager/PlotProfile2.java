@@ -19,20 +19,11 @@ public class PlotProfile2 {
 		this.plotname = plotname;
 	}
 	
-	private int plot_max_size = 300;
 	
 	@SuppressWarnings("unchecked")
 	public void filterRectangles() {
 		blocks_red.clear();
 		Bukkit.getConsoleSender().sendMessage("Plot "+plotname+" wird in Rechtecke eingeteilt...");
-		
-		
-//		double ax =  3000000d;
-//		double az =  3000000d;
-//		double bx = -3000000d;
-//		double bz = -3000000d;
-		double ax = -0d;
-		double az = -0d;
 		
 		World world = null;
 		double biggestx = -3000000d;
@@ -61,67 +52,14 @@ public class PlotProfile2 {
 		Bukkit.broadcastMessage("Filtering:\nBlocks Count: "+blocks.size()+"\nSmallestX: "+smallestx+"\nSmallestZ: "+smallestz+"\nBiggestX: "+biggestx+"\nBiggestZ: "+biggestz);
 		Location loc1 = new Location(world, biggestx, 71, biggestz);
 		Location loc2 = new Location(world, smallestx, 71, smallestz);
-		Location loc = null;
-		if(loc1.getWorld() == null) broadcast("Loc1world == null");
-		if(loc2.getWorld() == null) broadcast("Loc2world == null");
-		if(loc1 == null) broadcast("Loc1 == null");
-		if(loc2 == null) broadcast("Loc2 == null");
 		loc1.getBlock().setType(Material.GLOWSTONE);
 		loc2.getBlock().setType(Material.GLOWSTONE);
 		
 		double subx1 = -0d;
 		double subz1 = -0d;
-		double subx2 = -0d;
-		double subz2 = -0d;
 		
 		int times = 1; //Sicherung damit die While-Schleife nach max_times Mal abbricht
 		int max_times = 100;
-		
-		
-//		while((blocks_copy.size()-blocks_red.size()) > 0 && times < max_times) {
-		
-		
-//		FUnktioniert bisher am besten
-		
-		
-//			broadcast("Copy Size: "+blocks_copy.size()+"\nTimes: "+times+"/"+max_times);
-//			for(int iz = 0; iz != blocks_copy.size(); iz++) {					
-//				for(int ix = 0; ix != blocks_copy.size(); ix++) {
-//					for(Block b : blocks_copy) {
-//						loc = b.getLocation().clone();
-//						if(b.getType().toString().contains("BRICK")) {
-//							if(ax == -0d) {
-//								ax = b.getLocation().getX();
-//								subx1 = ax;
-//							}
-//							if(az == -0d) {
-//								az = b.getLocation().getZ();
-//								subz1 = az;
-//							}
-//							b.setType(Material.REDSTONE_BLOCK);
-//							if((int)b.getLocation().getX() >= (int)(ax) && (int)b.getLocation().getZ() >= (int)(az)) {							
-//								broadcast((int)b.getLocation().getX()+" == "+(int)(ax)+" && "+(int)b.getLocation().getZ()+" == "+(int)(az+iz));
-//								subx2 = b.getLocation().getX();
-////								subz2 = b.getLocation().getZ();
-//								loc.add(0,3,0).getBlock().setType(Material.BEDROCK);
-//							
-//								blocks_red.add(b);
-//							}
-//							if((int)b.getLocation().getZ() >= (int)(az) && (int)b.getLocation().getX() >= (int)(ax)) {							
-//								broadcast((int)b.getLocation().getX()+" == "+(int)(ax)+" && "+(int)b.getLocation().getZ()+" == "+(int)(az+iz));
-////								subx2 = b.getLocation().getX();
-//								subz2 = b.getLocation().getZ();
-//								loc.add(0,3,0).getBlock().setType(Material.BEDROCK);
-//								
-//								blocks_red.add(b);
-//							}
-//						}
-//					}
-//				}
-//			}
-//			times++;
-//		}
-//		broadcast("subx1/subz1: "+subx1+"/"+subz1+" subx2/subz2: "+subx2+"/"+subz2);
 		
 		while((blocks_copy.size()-blocks_red.size()) > 0 && times < max_times) {
 //			broadcast("Copy Size: "+blocks_copy.size()+"\nTimes: "+times+"/"+max_times);

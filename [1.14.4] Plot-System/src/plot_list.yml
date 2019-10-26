@@ -4,8 +4,12 @@
 # Hier wird festgehalten, ob ein Plot noch zu haben ist, Sprich: nicht bewohnt.
 #
 # Hierarchie:
+# Plotnames: []
 # Plots:
-#   Is Available: Wert
+#  TestPlot:
+#   Subregions: 0
+#   isValid: true
+#   Owner: [UUID vom Owner](Default: NONE)
 #   World: Wert
 #   Sign X: Wert
 #   Sign Y: Wert
@@ -16,4 +20,10 @@
 #   X1.1: Wert
 #   Y1.1: Wert
 #   Z1.1: Wert
-#   Owner: [UUID vom Owner]
+#     Sub1:
+#      X1: Wert
+#      Y1: Wert
+#      Z1: Wert
+#      X1.1: Wert
+#      Y1.1: Wert
+#      Z1.1: Wert

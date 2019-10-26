@@ -1,7 +1,11 @@
 package me.teamdream.de.plotmanager;
 
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.bukkit.Bukkit;
@@ -9,14 +13,32 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import me.teamdream.de.PlotSystem;
+import me.teamdream.de.plotmanager.PlotManager.PlotID;
+import me.teamdream.de.plotmanager.PlotManager.PlotRegion;
 
 public class PlotProfile {
 	
-	public String plotname = "Unnamed";
+	public PlotID plotid = null;
 	public CopyOnWriteArrayList<Block> blocks = new CopyOnWriteArrayList<Block>();
+	public PlotRegion plotregion = null;
+	public ConcurrentHashMap<UUID, PlotPermission> members = new ConcurrentHashMap<UUID, PlotPermission>();
+	public int preis = 0;
 	
-	public PlotProfile(String plotname) {
-		this.plotname = plotname;
+	public PlotProfile(PlotID plotid, PlotRegion plotregion) {
+		this.plotid = plotid;
+		this.plotregion = plotregion;
+		loadMembers();
+	}
+	
+	
+	public void loadMembers() {
+		FileConfiguration cfg = YamlConfiguration.loadConfiguration(new File(PlotManager.home_path+"plot_list.yml"));
+		ArrayList<String> mems = (ArrayList<String>) cfg.getStringList("Plots."+plotid.getID()+".Members");
+		for(String s : mems) members.put(UUID.fromString(s), new PlotPermission(UUID.fromString(s)));
 	}
 	
 	private int plot_max_size = 300;
@@ -26,7 +48,7 @@ public class PlotProfile {
 	public void filterRectangles() {
 		ArrayList<String> temp_list = new ArrayList<String>();
 		ArrayList<Block> temp_list2 = new ArrayList<Block>();
-		Bukkit.getConsoleSender().sendMessage("Plot "+plotname+" wird in Rechtecke eingeteilt...");
+		Bukkit.getConsoleSender().sendMessage("Plot "+plotid+" wird in Rechtecke eingeteilt...");
 		
 		World world = null;
 		double biggestx = -3000000d;
@@ -149,6 +171,55 @@ public class PlotProfile {
 		marker_height = 73;
 	}
 	
+	public ConcurrentHashMap<UUID, PlotPermission> getMembers() {
+		return members;
+	}
+	
+	public boolean addMember(UUID uuid) {
+		return addMember(uuid, new PlotPermission(uuid));
+	}
+	
+	public boolean addMember(UUID uuid, PlotPermission permission) {
+		if(members.containsKey(uuid)) return false;
+		members.put(uuid, permission);
+		File file = new File(PlotManager.home_path+"plot_list.yml");
+		FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+		ArrayList<String> mems = (ArrayList<String>) cfg.getStringList("Plots."+plotid.getID()+".Members");
+		if(mems.contains(uuid.toString()) == false) mems.add(uuid.toString());
+		cfg.set("Plots."+plotid.getID()+".Members", mems);
+		try {cfg.save(file);} catch (IOException e) {e.printStackTrace();}
+		return true;
+	}
+	
+	public boolean removeMember(UUID uuid) {
+		if(members.containsKey(uuid) == false) return false;
+		members.remove(uuid);
+		File file = new File(PlotManager.home_path+"plot_list.yml");
+		FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+		ArrayList<String> mems = (ArrayList<String>) cfg.getStringList("Plots."+plotid.getID()+".Members");
+		if(mems.contains(uuid.toString())) mems.remove(uuid.toString());
+		
+		cfg.set("Plots."+plotid.getID()+".Members", mems);
+		cfg.set("Plots."+plotid.getID()+".Perms", members);
+		try {cfg.save(file);} catch (IOException e) {e.printStackTrace();}
+		return true;
+	}
+	
+	public boolean isMember(UUID uuid) {
+		return members.containsKey(uuid);
+	}
+	
+	public PlotPermission getPlotPermissions(UUID uuid) {
+		if(isMember(uuid)) return members.get(uuid);
+		return null;
+	}
+	
+	public boolean setPlotPermissions(UUID uuid, PlotPermission permission) {
+		if(isMember(uuid)) members.replace(uuid, members.get(uuid), permission);
+		else return false;
+		return true;
+	}
+	
 	public CopyOnWriteArrayList<Block> fill(Location ul, Location br, CopyOnWriteArrayList <Block> blocks_copy) {
 		Location l = null;
 		if(br.getBlockY()-ul.getBlockY() == 0) {
@@ -190,14 +261,23 @@ public class PlotProfile {
 		}
 	}
 	
-	public class SubArea {
+	public boolean addSubRegion(Location pos1, Location pos2) {
 		
-		public Location location = null;
-		public Location location2 = null;
+		if(plotregion == null) {
+			PlotSystem.getInstance().getPlotManager();
+			plotregion = PlotSystem.getInstance().getPlotManager().getRegion(plotid);
+			return plotregion.addLocation(pos1, pos2);
+		}else return plotregion.addLocation(pos1, pos2);
+	}
+	
+	public class PlotPermission {
 		
-		public SubArea(Location location, Location location2) {
-			this.location = location;
-			this.location2 = location2;
+		public UUID player_uuid = null;
+		public boolean allow_modify_plot = true;
+		public boolean allow_interacting = true;
+		
+		public PlotPermission(UUID uuid) {
+			this.player_uuid = uuid;
 		}
 		
 	}

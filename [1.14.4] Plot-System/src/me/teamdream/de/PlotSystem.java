@@ -2,11 +2,15 @@ package me.teamdream.de;
 
 import java.io.File;
 
+import org.bukkit.Location;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import me.teamdream.de.commands.PlotCommands;
+import me.teamdream.de.commands.Plots;
 import me.teamdream.de.listener.InteractListener;
+import me.teamdream.de.listener.InventoryListener;
 import me.teamdream.de.plotmanager.PlotManager;
+import me.teamdream.de.plotmanager.PlotProfile;
 
 public class PlotSystem extends JavaPlugin {
 	
@@ -29,7 +33,7 @@ public class PlotSystem extends JavaPlugin {
 	}
 	@Override
 	public void onDisable() {
-		// TODO Auto-generated method stub
+		plotmanager.closeSessions();
 		super.onDisable();
 	}
 	
@@ -45,12 +49,28 @@ public class PlotSystem extends JavaPlugin {
 		plotmanager = new PlotManager();
 		
 		new InteractListener();
+		new InventoryListener();
 		
 		getCommand("plot").setExecutor(new PlotCommands());
+		getCommand("plots").setExecutor(new Plots());
 	}
 	
 	public PlotManager getPlotManager() {
 		return this.plotmanager;
+	}
+	
+	public static PlotProfile getCurrentPlot(Location loc) {
+		PlotProfile p = null;
+		boolean wildnis = true;
+		for(String s : PlotSystem.getInstance().getPlotManager().plots.keySet()) {
+			p = PlotSystem.getInstance().getPlotManager().plots.get(s);
+			if(p.plotregion != null && p.plotregion.isInRegion(loc)) {
+				wildnis = false;
+				break;
+			}
+		}
+		if(wildnis) return null;
+		return p;
 	}
 	
 }

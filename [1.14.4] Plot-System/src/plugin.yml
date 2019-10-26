@@ -1,7 +1,10 @@
 name: PlotSystem
 version: 1.1.0
 author: TeamDream
+api-version: 1.14
 main: me.teamdream.de.PlotSystem
 commands:
   plot:
     description: 'Main Command'
+  plots:
+    description: 'Liste alle Plots auf'
