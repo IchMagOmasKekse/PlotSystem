@@ -32,7 +32,7 @@ public class PlotSession {
 	public void closeSession() {
 		bossbar.removePlayer(host);
 		host.sendMessage("§7§o[Deine PlotSession wurde beendet]");
-		if(PlotSystem.getInstance().getPlotManager().knowsSession(host)) PlotSystem.getInstance().getPlotManager().removeSession(host);
+		if(PlotSystem.getPlotManager().knowsSession(host)) PlotSystem.getPlotManager().removeSession(host);
 	}
 	
 	public void setPos1(Location pos1) {

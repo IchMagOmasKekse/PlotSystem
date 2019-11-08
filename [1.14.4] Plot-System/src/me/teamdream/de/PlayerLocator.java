@@ -22,9 +22,11 @@ public class PlayerLocator {
 		bossbar.addPlayer(player);
 	}
 	
+	String plot_name = "";
+	
 	public void updatePlot(PlotProfile profile) {
 		if(profile == null) {
-			bossbar.setTitle("§2Dein Standort: §fWildnis");
+			bossbar.setTitle("§fWildnis");
 			bossbar.addPlayer(player);			
 		} else {
 			if(this.profile == null)	this.profile = profile;
@@ -33,7 +35,10 @@ public class PlayerLocator {
 				if(send_entry_message)player.sendMessage("§7§o[Du hast "+profile.plotid.getID()+" betreten]");
 				this.profile = profile;
 			}
-			bossbar.setTitle("§2Dein Standort: §f"+profile.plotid.getID());
+			if(profile.getDisplayname().equals("NO_DISPLAYNAME") || profile.getDisplayname().toUpperCase().equals("NONE")) plot_name = profile.plotid.getID();
+			else plot_name = profile.getDisplayname();
+			if(PlotSystem.getPlotManager().getOwner(profile.plotid) != null) bossbar.setTitle("§f"+plot_name+" §2von §f"+Bukkit.getOfflinePlayer(PlotSystem.getPlotManager().getOwner(profile.plotid)).getName());
+			else bossbar.setTitle("§f"+plot_name+" §7§OInfo: Kein Besitzer");
 			bossbar.addPlayer(player);
 		}
 	}

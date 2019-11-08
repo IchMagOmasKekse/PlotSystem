@@ -9,6 +9,7 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.block.Sign;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -65,6 +66,8 @@ public class PlotManager {
 	
 	public boolean registerPlot(PlotID plotid, PlotSession session) {
 		if(existPlot(plotid) == false) {
+			PlotProfile profile = new PlotProfile(plotid, getRegion(plotid), false);
+			profile.preis = profile.plotid.readPrice();
 			File file = new File(home_path+"/plot_list.yml");
 			FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
 			ArrayList<String> names = (ArrayList<String>) cfg.getStringList("Plotnames");
@@ -72,7 +75,9 @@ public class PlotManager {
 			cfg.set("Plotnames", names);
 			cfg.set("Plots."+plotid.getID()+".isValid", true);
 			cfg.set("Plots."+plotid.getID()+".Owner", "none");
-			cfg.set("Plots."+plotid.getID()+".Subregions", 0);
+			cfg.set("Plots."+plotid.getID()+".Displayname", profile.getDisplayname());
+			cfg.set("Plots."+plotid.getID()+".Systemname", plotid.getID());
+			cfg.set("Plots."+plotid.getID()+".Price", profile.preis);
 			cfg.set("Plots."+plotid.getID()+".Members", new ArrayList<String>());
 			cfg.set("Plots."+plotid.getID()+".World", plotid.getLocation().getWorld().getName());
 			cfg.set("Plots."+plotid.getID()+".Sign X", plotid.getSignLocationX());
@@ -87,7 +92,7 @@ public class PlotManager {
 			
 			try {
 				cfg.save(file); 
-				PlotProfile profile = new PlotProfile(plotid, getRegion(plotid));
+				profile.doSetup();
 				if(plots.containsKey(plotid.getID()) == false) {
 					plots.put(plotid.getID(), profile);
 				}
@@ -199,6 +204,7 @@ public class PlotManager {
 		private Location loc = null;
 		private String id = "KEINE ID FESTGELEGT";
 		
+		
 		public PlotID(Location loc) {
 			this.loc = loc;
 		}
@@ -236,6 +242,16 @@ public class PlotManager {
 		}
 		public int getSignLocationZ() {
 			return (int) loc.getZ();
+		}
+		
+		public int readPrice() {
+			if(getLocation().getBlock().getType().toString().contains("_SIGN")) {
+				Sign s = (Sign) getLocation().getBlock().getState();
+				if(s.getLine(0).contains("ID:"+getID()) && s.getLine(1).contains("Preis:")) {
+					return Integer.parseInt(s.getLine(1).replace(" ", "").replace("Preis:", "").replace("€", ""));
+				}
+			}
+			return 0;
 		}
 		
 	}

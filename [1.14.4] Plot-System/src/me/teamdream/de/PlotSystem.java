@@ -41,6 +41,7 @@ public class PlotSystem extends JavaPlugin {
 		pl = this;
 		
 		if(new File("plugins/PlotSystem/plot_list.yml").exists() == false) saveResource("plot_list.yml", true);
+		if(new File("plugins/PlotSystem/settings.yml").exists() == false) saveResource("settings.yml", true);
 	}
 	public void init() {
 		
@@ -55,15 +56,15 @@ public class PlotSystem extends JavaPlugin {
 		getCommand("plots").setExecutor(new Plots());
 	}
 	
-	public PlotManager getPlotManager() {
-		return this.plotmanager;
+	public static PlotManager getPlotManager() {
+		return getInstance().plotmanager;
 	}
 	
 	public static PlotProfile getCurrentPlot(Location loc) {
 		PlotProfile p = null;
 		boolean wildnis = true;
-		for(String s : PlotSystem.getInstance().getPlotManager().plots.keySet()) {
-			p = PlotSystem.getInstance().getPlotManager().plots.get(s);
+		for(String s : PlotSystem.getPlotManager().plots.keySet()) {
+			p = PlotSystem.getPlotManager().plots.get(s);
 			if(p.plotregion != null && p.plotregion.isInRegion(loc)) {
 				wildnis = false;
 				break;

@@ -27,7 +27,7 @@ public class InteractListener implements Listener {
 	private PlotManager plotmanager = null;
 	
 	public InteractListener() {
-		plotmanager = PlotSystem.getInstance().getPlotManager();
+		plotmanager = PlotSystem.getPlotManager();
 		PlotSystem.getInstance().getServer().getPluginManager().registerEvents(this, PlotSystem.getInstance());
 	}
 	
@@ -62,8 +62,8 @@ public class InteractListener implements Listener {
 					if(s.getLine(0).contains("ID:") && s.getLine(1).contains("Preis: ") && s.getLine(2).equals("Rechtsklick zum") && s.getLine(3).equals("Beanspruchen")) {
 						plotid = new PlotID(s.getLocation());
 						plotid.setID(s.getLine(0).replace("ID:", ""));
-						if(PlotSystem.getInstance().getPlotManager().isCorrectlyRegistered(plotid)) {							
-							profile_player = PlotSystem.getInstance().getPlotManager().getPlotProfile(plotid);
+						if(PlotSystem.getPlotManager().isCorrectlyRegistered(plotid)) {							
+							profile_player = PlotSystem.getPlotManager().getPlotProfile(plotid);
 							profile_player.plotid = plotid;
 							profile_player.preis = Integer.parseInt(s.getLine(1).replace("Preis: ", "").replace("€", ""));
 							p.openInventory(new PlotBuyInventory().getInventory(p, profile_player));

@@ -26,12 +26,23 @@ public class PlotProfile {
 	public CopyOnWriteArrayList<Block> blocks = new CopyOnWriteArrayList<Block>();
 	public PlotRegion plotregion = null;
 	public ConcurrentHashMap<UUID, PlotPermission> members = new ConcurrentHashMap<UUID, PlotPermission>();
+	public String displayname = "NO_DISPLAYNAME";
 	public int preis = 0;
 	
+	public PlotProfile(PlotID plotid, PlotRegion plotregion, boolean loaddata) {
+		this.plotid = plotid;
+		this.plotregion = plotregion;
+		if(loaddata) doSetup();
+	}
 	public PlotProfile(PlotID plotid, PlotRegion plotregion) {
 		this.plotid = plotid;
 		this.plotregion = plotregion;
+		doSetup();
+	}
+	
+	public void doSetup() {
 		loadMembers();
+		loadData();
 	}
 	
 	
@@ -39,6 +50,14 @@ public class PlotProfile {
 		FileConfiguration cfg = YamlConfiguration.loadConfiguration(new File(PlotManager.home_path+"plot_list.yml"));
 		ArrayList<String> mems = (ArrayList<String>) cfg.getStringList("Plots."+plotid.getID()+".Members");
 		for(String s : mems) members.put(UUID.fromString(s), new PlotPermission(UUID.fromString(s)));
+	}
+	
+	public void loadData(){
+		FileConfiguration cfg = YamlConfiguration.loadConfiguration(new File(PlotManager.home_path+"plot_list.yml"));
+		
+		displayname = cfg.getString("Plots."+plotid.getID()+".Displayname");
+		preis = cfg.getInt("Plots."+plotid.getID()+".Preis");
+		
 	}
 	
 	private int plot_max_size = 300;
@@ -264,8 +283,8 @@ public class PlotProfile {
 	public boolean addSubRegion(Location pos1, Location pos2) {
 		
 		if(plotregion == null) {
-			PlotSystem.getInstance().getPlotManager();
-			plotregion = PlotSystem.getInstance().getPlotManager().getRegion(plotid);
+			PlotSystem.getPlotManager();
+			plotregion = PlotSystem.getPlotManager().getRegion(plotid);
 			return plotregion.addLocation(pos1, pos2);
 		}else return plotregion.addLocation(pos1, pos2);
 	}
@@ -280,6 +299,27 @@ public class PlotProfile {
 			this.player_uuid = uuid;
 		}
 		
+	}
+	
+	public String getDisplayname() {
+		return this.displayname;
+	}
+	public boolean setDisplayname(String name) {
+		this.displayname = name;
+		return saveData();
+	}
+	
+	public boolean saveData() {
+		File file = new File(PlotManager.home_path+"plot_list.yml");
+		FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+		cfg.set("Plots."+plotid.getID()+".Displayname", getDisplayname());
+		try {
+			cfg.save(file);
+			return true;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 	
 }

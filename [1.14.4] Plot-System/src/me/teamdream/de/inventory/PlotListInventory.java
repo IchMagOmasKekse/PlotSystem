@@ -16,7 +16,7 @@ import me.teamdream.de.plotmanager.PlotManager;
 public class PlotListInventory {
 	
 	public static HashMap<Player, Inventory> invs = new HashMap<Player, Inventory>();
-	private PlotManager plotmanager = PlotSystem.getInstance().getPlotManager();
+	private PlotManager plotmanager = PlotSystem.getPlotManager();
 	
 	public Inventory getInventory(Player player) {
 		if(invs.containsKey(player)) return null;
@@ -48,7 +48,10 @@ public class PlotListInventory {
 				if(plotnumber < 45) {
 					if(plotmanager.plots.get(p) != null && plotmanager.isCorrectlyRegistered(plotmanager.plots.get(p).plotid)) {						
 						lore.clear();
-						lore.add("§7Owner: §f"+Bukkit.getOfflinePlayer(plotmanager.getOwner(plotmanager.plots.get(p).plotid)).getName());
+						if(plotmanager != null && plotmanager.plots.get(p) != null && plotmanager.getOwner(plotmanager.plots.get(p).plotid) != null && plotmanager.getOwner(plotmanager.plots.get(p).plotid) != null) lore.add("§7Owner: §f"+Bukkit.getOfflinePlayer(plotmanager.getOwner(plotmanager.plots.get(p).plotid)).getName());
+						else lore.add("§7Owner: §7§oKein Besitzer");
+						lore.add("§7Displayname: §f"+plotmanager.plots.get(p).getDisplayname());
+						lore.add("§7Systemname: §f"+plotmanager.plots.get(p).plotid.getID());
 						item = new ItemStack(Material.OAK_FENCE, 1);
 						meta = item.getItemMeta();
 						meta.setLore(lore);

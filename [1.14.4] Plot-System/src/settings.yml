@@ -1,0 +1,7 @@
+#Erstellt durch Automatisierte Generation dieser Datei
+#
+# Hier werden alle Einstellungen für das PlotSystem festgelegt
+#
+# Der Wert Unendlich lässt sich mit -0 realisieren
+max-plots-per-player: 1
+max-plots-per-village: -0

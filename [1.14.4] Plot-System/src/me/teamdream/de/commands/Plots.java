@@ -19,7 +19,7 @@ public class Plots implements CommandExecutor {
 				if(p.hasPermission("plotsystem.plots")) {
 					PlotListInventory pinv = new PlotListInventory();
 					p.openInventory(pinv.getInventory(p));
-				}
+				}else p.sendMessage(noPerm);
 			}
 		}
 		return true;
