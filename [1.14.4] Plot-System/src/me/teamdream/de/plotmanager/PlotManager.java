@@ -9,6 +9,7 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -16,6 +17,8 @@ import org.bukkit.entity.Player;
 
 import me.teamdream.de.Cuboid;
 import me.teamdream.de.PlayerLocator;
+import me.teamdream.de.PlayerProfiler;
+import me.teamdream.de.server.AccountManager;
 
 public class PlotManager {
 	
@@ -54,6 +57,32 @@ public class PlotManager {
 			if(getOwner(plotid) == null) {
 				cfg.set("Plots."+plotid.getID()+".Owner", p.getUniqueId().toString());
 				try { cfg.save(file); return true; } catch (IOException e) { e.printStackTrace(); return false; }
+			}else return false;
+		}else return false;
+	}
+	
+	public boolean sellOwnPlot(Player p, PlotID plotid) {
+		File file = new File(home_path+"/plot_list.yml");
+		FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+		if(plots.containsKey(plotid.getID())) {
+			if(getOwner(plotid).equals(p.getUniqueId())) {
+				cfg.set("Plots."+plotid.getID()+".Owner", "none");
+				int preis = plots.get(plotid.getID()).preis;
+				try { 
+					if(AccountManager.addMoney(p.getUniqueId(), preis)) {
+						p.sendMessage("§a+"+plots.get(plotid.getID()).preis);
+						if(!(plotid.getLocation().getBlock().getState() instanceof Sign)) plotid.getLocation().getBlock().setType(Material.OAK_SIGN);
+						Sign sign = (Sign)plotid.getLocation().getBlock().getState();
+						sign.setLine(0, "ID:"+plotid.getID());
+						sign.setLine(1, "Preis: "+plots.get(plotid.getID()).preis+"€");
+						sign.setLine(2, "Rechtsklick zum");
+						sign.setLine(3, "Beanspruchen");
+						sign.update();
+						cfg.save(file);
+						PlayerProfiler.removeBoughtPlot(p, 1);
+					}else p.sendMessage("§cFehler beim Verkaufen deines Plots.\nVersuche es erneut.");
+					return true; 
+				} catch (IOException e) { e.printStackTrace(); return false; }
 			}else return false;
 		}else return false;
 	}

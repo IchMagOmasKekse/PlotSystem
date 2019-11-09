@@ -25,5 +25,16 @@ public class PlayerProfiler {
 			e.printStackTrace();
 		}
 	}
+	public static void removeBoughtPlot(Player p, int amount) {
+		File file = new File("plugins/TeamDream/Profiling/"+p.getUniqueId()+".yml");
+		FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+		
+		cfg.set("plots claimed", cfg.getInt("plots claimed")-amount);
+		try {
+			cfg.save(file);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 	
 }

@@ -34,7 +34,11 @@ public class PlotCommands implements CommandExecutor {
 						sendHelp(p);
 						break;
 					case 1:
-						if(args[0].equalsIgnoreCase("auto")) {
+						if(args[0].equalsIgnoreCase("sell")) {
+							if(p.hasPermission("plotsystem.sell")) {
+								sellPlot(p);
+							}else p.sendMessage(noPerm);
+						}else if(args[0].equalsIgnoreCase("auto")) {
 							if(p.hasPermission("plotsystem.auto")) {
 								searchFreePlot(p);
 							}else p.sendMessage(noPerm);
@@ -209,6 +213,25 @@ public class PlotCommands implements CommandExecutor {
 			selectedProfile.plotregion.teleportToPlot(p);
 			p.sendMessage("§aDieses Plot ist noch frei");
 		}else p.sendMessage("§cEs konnte kein freies Plot gefunden werden.\nProbiere es erneut, wenn es wieder freie Plots gibt.");
+	}
+	
+	public void sellPlot(Player p) {
+		sellPlot(p, true);
+	}
+	
+	public void sellPlot(Player p, boolean currentStayingPlot) {
+		PlotProfile pp = PlotSystem.getCurrentPlot(p.getLocation());
+		if(pp == null) {
+			p.sendMessage("§cDu bist in der Wildnis. Stelle dich auf das Plot, welches du verkaufen möchtest!");
+		}else {
+			if(pmanager.getOwner(pp.plotid) != null){				
+				if(pmanager.getOwner(pp.plotid).equals(p.getUniqueId())) {
+					if(pmanager.sellOwnPlot(p, pp.plotid)) {
+						p.sendMessage("§aDein Plot wurde verkauft!");
+					}else p.sendMessage("§cDein Plot konnte nicht verkauft werden");
+				}
+			}else p.sendMessage("§cDieses Plot wurde von niemanden beansprucht!");
+		}
 	}
 	
 	public void sendHelp(Player p) {
