@@ -5,12 +5,15 @@ import java.util.Random;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import me.teamdream.de.PlotSystem;
+import me.teamdream.de.event.PlotBuyEvent;
+import me.teamdream.de.event.PlotCreateEvent;
 import me.teamdream.de.inventory.PlotListInventory;
 import me.teamdream.de.plotmanager.PlotManager;
 import me.teamdream.de.plotmanager.PlotManager.PlotID;
@@ -21,10 +24,12 @@ public class PlotCommands implements CommandExecutor {
 	
 	private String noPerm = "§cDu hast kein Recht dazu!";
 	private PlotManager pmanager = PlotSystem.getPlotManager();
+	private PlotProfile pprofile = null;
 	
 	@SuppressWarnings("deprecation")
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String arg2, String[] args) {
+		pprofile = null;
 		if(sender instanceof Player) {
 			Player p = (Player) sender;
 			if(cmd.getName().equalsIgnoreCase("plot")) {
@@ -49,7 +54,7 @@ public class PlotCommands implements CommandExecutor {
 							}else p.sendMessage(noPerm);
 						}else if(args[0].equalsIgnoreCase("members")) {
 							if(p.hasPermission("plotsystem.members")) {
-								PlotProfile pprofile = PlotSystem.getCurrentPlot(p.getLocation());
+								pprofile = PlotSystem.getCurrentPlot(p.getLocation());
 								if(pprofile == null) {
 									p.sendMessage("§cDu bist in der Wildnis. Stelle dich auf das Plot, von dem du einen Spieler entfernen willst!");
 									return false;
@@ -95,7 +100,12 @@ public class PlotCommands implements CommandExecutor {
 											p.sendMessage("§aPlot §f"+plotid.getID()+" §awurde erstellt");
 											session.closeSession();
 											pmanager.sessions.remove(p);
-										}else p.sendMessage("§cDiesen Plot gibt es bereits");
+											pprofile = PlotSystem.getCurrentPlot(p.getLocation());
+											Bukkit.getPluginManager().callEvent(new PlotCreateEvent(pprofile, p, true));
+										}else {
+											Bukkit.getPluginManager().callEvent(new PlotCreateEvent(null, p, false));
+											p.sendMessage("§cDiesen Plot gibt es bereits");
+										}
 									}
 								}else p.sendMessage("§cDu musst 2 Locations und das Schild markieren mit SNEAKEN+LINKSKLICK!");
 							}else p.sendMessage(noPerm);
@@ -210,8 +220,11 @@ public class PlotCommands implements CommandExecutor {
 		}
 		selectedProfile = profiles.get(index);
 		if(found) {
-			selectedProfile.plotregion.teleportToPlot(p);
-			p.sendMessage("§aDieses Plot ist noch frei");
+			Location loc = selectedProfile.plotregion.getSpawnMiddle();
+			loc.setYaw(p.getLocation().clone().getYaw());
+			loc.setPitch(p.getLocation().clone().getPitch());
+			p.teleport(loc);
+			p.sendMessage("§9Dieses Plot ist noch frei");
 		}else p.sendMessage("§cEs konnte kein freies Plot gefunden werden.\nProbiere es erneut, wenn es wieder freie Plots gibt.");
 	}
 	
@@ -227,8 +240,12 @@ public class PlotCommands implements CommandExecutor {
 			if(pmanager.getOwner(pp.plotid) != null){				
 				if(pmanager.getOwner(pp.plotid).equals(p.getUniqueId())) {
 					if(pmanager.sellOwnPlot(p, pp.plotid)) {
+						Bukkit.getPluginManager().callEvent(new PlotBuyEvent(pp, p, pp.preis, true));
 						p.sendMessage("§aDein Plot wurde verkauft!");
-					}else p.sendMessage("§cDein Plot konnte nicht verkauft werden");
+					}else {
+						Bukkit.getPluginManager().callEvent(new PlotBuyEvent(pp, p, pp.preis, false));
+						p.sendMessage("§cDein Plot konnte nicht verkauft werden");
+					}
 				}
 			}else p.sendMessage("§cDieses Plot wurde von niemanden beansprucht!");
 		}

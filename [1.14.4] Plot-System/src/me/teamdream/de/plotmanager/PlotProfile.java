@@ -308,6 +308,11 @@ public class PlotProfile {
 		this.displayname = name;
 		return saveData();
 	}
+	public boolean setDisplayname(String name, boolean saveToFile) {
+		this.displayname = name;
+		if(saveToFile) return saveData();
+		else return true;
+	}
 	
 	public boolean saveData() {
 		File file = new File(PlotManager.home_path+"plot_list.yml");

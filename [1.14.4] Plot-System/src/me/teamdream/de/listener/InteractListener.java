@@ -17,6 +17,8 @@ import org.bukkit.event.player.PlayerMoveEvent;
 
 import me.teamdream.de.PlayerLocator;
 import me.teamdream.de.PlotSystem;
+import me.teamdream.de.event.PlotEntryEvent;
+import me.teamdream.de.event.PlotLeaveEvent;
 import me.teamdream.de.inventory.PlotBuyInventory;
 import me.teamdream.de.plotmanager.PlotManager;
 import me.teamdream.de.plotmanager.PlotManager.PlotID;
@@ -139,6 +141,15 @@ public class InteractListener implements Listener {
 				else if(profile_block.getPlotPermissions(p.getUniqueId()).allow_modify_plot == false) e.setCancelled(true);
 			}else if(p.isOp() == false || p.hasPermission("plotmanager.modify.break") == false) e.setCancelled(true);
 		}
+	}
+	
+	@EventHandler
+	public void onEntry(PlotEntryEvent e) {
+		e.getGuest().sendMessage("§3Du hast "+e.getProfile().getDisplayname()+" Betreten");
+	}
+	@EventHandler
+	public void onLeave(PlotLeaveEvent e) {
+		e.getGuest().sendMessage("§cDu hast "+e.getProfile().getDisplayname()+" verlassen");
 	}
 	
 }

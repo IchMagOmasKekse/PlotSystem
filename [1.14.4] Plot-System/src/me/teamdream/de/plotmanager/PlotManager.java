@@ -11,6 +11,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Sign;
+import org.bukkit.block.data.Directional;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -71,7 +72,18 @@ public class PlotManager {
 				try { 
 					if(AccountManager.addMoney(p.getUniqueId(), preis)) {
 						p.sendMessage("§a+"+plots.get(plotid.getID()).preis);
-						if(!(plotid.getLocation().getBlock().getState() instanceof Sign)) plotid.getLocation().getBlock().setType(Material.OAK_SIGN);
+						if(!(plotid.getLocation().getBlock().getState() instanceof Sign)) {
+							plotid.getLocation().getBlock().setType(Material.OAK_SIGN);
+						}
+						
+//					    if(plotid.getLocation().getBlock().getBlockData() instanceof Sign) {
+//					    	Sign directional = (Sign) plotid.getLocation().getBlock().getBlockData();
+//					    	((Directional) directional).setFacing(BlockFace.valueOf(cfg.getString("Plots."+plotid.getID()+".Sign Rotation")));
+//					    	plotid.getLocation().getBlock().setBlockData(directional.getBlockData());
+//					    	plotid.getLocation().getBlock().getState().update();
+//					    	System.out.println(cfg.getString("Plots."+plotid.getID()+".Sign Rotation"));
+//					    }
+						
 						Sign sign = (Sign)plotid.getLocation().getBlock().getState();
 						sign.setLine(0, "ID:"+plotid.getID());
 						sign.setLine(1, "Preis: "+plots.get(plotid.getID()).preis+"€");
@@ -106,6 +118,10 @@ public class PlotManager {
 			cfg.set("Plots."+plotid.getID()+".Owner", "none");
 			cfg.set("Plots."+plotid.getID()+".Displayname", profile.getDisplayname());
 			cfg.set("Plots."+plotid.getID()+".Systemname", plotid.getID());
+			if(plotid.getLocation().getBlock().getState().getBlockData() instanceof Directional) {
+				Directional blockdata = (Directional) plotid.getLocation().getBlock().getBlockData();
+				cfg.set("Plots."+plotid.getID()+".Sign Rotation", blockdata.getFacing().toString());
+			}else cfg.set("Plots."+plotid.getID()+".Sign Rotation", "EAST");
 			cfg.set("Plots."+plotid.getID()+".Price", profile.preis);
 			cfg.set("Plots."+plotid.getID()+".Members", new ArrayList<String>());
 			cfg.set("Plots."+plotid.getID()+".World", plotid.getLocation().getWorld().getName());
@@ -147,7 +163,6 @@ public class PlotManager {
 			plotregion.putLocationInList(new Location(Bukkit.getWorld(world), x, y, z), new Location(Bukkit.getWorld(world), x2, y2, z2));
 			if(subregions > 0) {				
 				for(int i = 1; i < subregions+1; i++) {
-					Bukkit.broadcastMessage("Adding Sub: "+i);
 					x = cfg.getDouble("Plots."+plotid.getID()+".Sub"+i+".X1");
 					y = cfg.getDouble("Plots."+plotid.getID()+".Sub"+i+".Y1");
 					z = cfg.getDouble("Plots."+plotid.getID()+".Sub"+i+".Z1");
@@ -374,6 +389,15 @@ public class PlotManager {
 					break;
 				}
 			}
+		}
+		
+		public Location getSpawnMiddle() {
+			if(regions.isEmpty() == false) {
+				for(Cuboid cuboid : regions) {
+					return cuboid.getCenter().getWorld().getHighestBlockAt(cuboid.getCenter()).getLocation();
+				}
+			}
+			return null;
 		}
 	}
 }
