@@ -17,6 +17,8 @@ import me.teamdream.de.event.PlotCreateEvent;
 import me.teamdream.de.inventory.PlotListInventory;
 import me.teamdream.de.plotmanager.PlotManager;
 import me.teamdream.de.plotmanager.PlotManager.PlotID;
+import me.teamdream.de.schematic.SchematicManager;
+import me.teamdream.de.schematic.SchematicManager.Schematic;
 import me.teamdream.de.plotmanager.PlotProfile;
 import me.teamdream.de.plotmanager.PlotSession;
 
@@ -96,11 +98,21 @@ public class PlotCommands implements CommandExecutor {
 									plotid.setID(args[0]);
 									if(plotid.getLocation() == null) p.sendMessage("§eDu musst das Schild noch mit §6SNEAKEN + Linksklick §emarkieren.\nWelches Schild? Na das wo der Preis drauf steht!");
 									else {
-										if(pmanager.registerPlot(plotid, session)) {
+										if(pmanager.registerPlot(plotid, session, true)) {
 											p.sendMessage("§aPlot §f"+plotid.getID()+" §awurde erstellt");
 											session.closeSession();
 											pmanager.sessions.remove(p);
 											pprofile = PlotSystem.getCurrentPlot(p.getLocation());
+											SchematicManager sm = new SchematicManager();
+											if(pprofile == null) {
+												p.sendMessage("§cDu musst dich auf das Grundstück stellen!");
+												return false;
+											}
+											if(pprofile.plotid == null) p.sendMessage("plotid == null");
+											if(pprofile.plotid.getID() == null) p.sendMessage("ID == null");
+											p.sendMessage("plugins/Schematics/"+pprofile.plotid.getID()+".yml");
+											Schematic schematic = sm.new Schematic("plugins/Schematics/"+pprofile.plotid.getID()+".yml", p.getLocation().clone(), p.getLocation().add(10,13,2), false);
+											sm.saveSchematic(schematic);
 											Bukkit.getPluginManager().callEvent(new PlotCreateEvent(pprofile, p, true));
 										}else {
 											Bukkit.getPluginManager().callEvent(new PlotCreateEvent(null, p, false));

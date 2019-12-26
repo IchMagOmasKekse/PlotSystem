@@ -105,7 +105,7 @@ public class PlotManager {
 		return cfg.getBoolean("Plots."+plotid.getID()+".isValid");
 	}
 	
-	public boolean registerPlot(PlotID plotid, PlotSession session) {
+	public boolean registerPlot(PlotID plotid, PlotSession session, boolean useRealYCoords) {
 		if(existPlot(plotid) == false) {
 			PlotProfile profile = new PlotProfile(plotid, getRegion(plotid), false);
 			profile.preis = profile.plotid.readPrice();
@@ -129,10 +129,12 @@ public class PlotManager {
 			cfg.set("Plots."+plotid.getID()+".Sign Y", plotid.getSignLocationY());
 			cfg.set("Plots."+plotid.getID()+".Sign Z", plotid.getSignLocationZ());
 			cfg.set("Plots."+plotid.getID()+".X1", session.getPos1().getX());
-			cfg.set("Plots."+plotid.getID()+".Y1", 256);
+			if(useRealYCoords)cfg.set("Plots."+plotid.getID()+".Y1", session.getPos1().getY());
+			else cfg.set("Plots."+plotid.getID()+".Y1", 256);
 			cfg.set("Plots."+plotid.getID()+".Z1", session.getPos1().getZ());
 			cfg.set("Plots."+plotid.getID()+".X2", session.getPos2().getX()+1);
-			cfg.set("Plots."+plotid.getID()+".Y2", 0);
+			if(useRealYCoords) cfg.set("Plots."+plotid.getID()+".Y2", session.getPos2().getY());
+			else cfg.set("Plots."+plotid.getID()+".Y2", 0);
 			cfg.set("Plots."+plotid.getID()+".Z2", session.getPos2().getZ()+1);
 			
 			try {

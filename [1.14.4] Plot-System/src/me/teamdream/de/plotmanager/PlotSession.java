@@ -111,7 +111,7 @@ public class PlotSession {
 		//   |    /| 
 		//   |  /  | b
 		//   |/____|
-		//  A   a
+		//  A   a  
 		
 		Location bigger = null;
 		Location smaller = null;
@@ -133,6 +133,14 @@ public class PlotSession {
 			smaller = pos1.clone();
 			success = true;
 		}else if(pos1.getZ() > pos2.getZ()) {
+			bigger = pos1.clone();
+			smaller = pos2.clone();
+			success = true;
+		}/* Y-Integration -> */ else if(pos1.getY() < pos2.getY()) {
+			bigger = pos2.clone();
+			smaller = pos1.clone();
+			success = true;
+		}else if(pos1.getY() > pos2.getY()) {
 			bigger = pos1.clone();
 			smaller = pos2.clone();
 			success = true;

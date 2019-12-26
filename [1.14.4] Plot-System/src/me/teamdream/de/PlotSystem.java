@@ -12,6 +12,7 @@ import me.teamdream.de.commands.PlotCommands;
 import me.teamdream.de.commands.Plots;
 import me.teamdream.de.listener.InteractListener;
 import me.teamdream.de.listener.InventoryListener;
+import me.teamdream.de.listener.PlotCreateListener;
 import me.teamdream.de.plotmanager.PlotManager;
 import me.teamdream.de.plotmanager.PlotProfile;
 
@@ -92,6 +93,7 @@ public class PlotSystem extends JavaPlugin {
 		
 		new InteractListener();
 		new InventoryListener();
+		new PlotCreateListener();
 		
 		getCommand("plot").setExecutor(new PlotCommands());
 		getCommand("plots").setExecutor(new Plots());
